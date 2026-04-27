@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>台股技術分析多頭共振決策系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">本機查詢工具</p>
+        <h1>輸入股票代號，直接看多頭共振技術分析</h1>
+        <p class="intro">
+          整合均線、KD、MACD 與量能濾網，快速輸出進場分數、強弱判讀與中文決策論述。
+        </p>
+      </section>
+
+      <section class="panel">
+        <form id="query-form" class="query-form">
+          <label for="symbol">股票代號</label>
+          <div class="query-grid">
+            <input id="symbol" name="symbol" placeholder="例如 6442 或 00981A" maxlength="6" autocapitalize="characters" required />
+            <input id="cost" name="cost" inputmode="decimal" placeholder="可選填成本價，例如 188.5" />
+            <button type="submit">查詢</button>
+          </div>
+        </form>
+
+        <p id="error" class="error" hidden></p>
+
+        <article id="result" class="result" hidden>
+          <header class="result-header">
+            <div>
+              <p id="result-market" class="result-market"></p>
+              <h2 id="result-title"></h2>
+            </div>
+            <div class="score-badge">
+              <span id="decision-label"></span>
+              <strong id="decision-score"></strong>
+            </div>
+          </header>
+
+          <section class="hero-grid">
+            <div class="headline-card">
+              <span class="tiny-label">最新收盤</span>
+              <strong id="result-close" class="big-value"></strong>
+            </div>
+
+            <div class="headline-card">
+              <span class="tiny-label">資料日期</span>
+              <strong id="result-date" class="big-value small"></strong>
+            </div>
+
+            <div class="headline-card">
+              <span class="tiny-label">策略判定</span>
+              <strong id="decision-text" class="big-value small"></strong>
+            </div>
+
+            <div class="headline-card">
+              <span class="tiny-label">產業 / 題材</span>
+              <strong id="industry-group" class="big-value small"></strong>
+            </div>
+          </section>
+
+          <section class="tags-wrap">
+            <h3>彩色標籤系統</h3>
+            <div id="color-tags" class="tag-list"></div>
+          </section>
+
+          <section class="summary-card">
+            <h3>K線 / 成交量 / MACD / KD 技術圖</h3>
+            <div id="chart-root" class="chart-root"></div>
+          </section>
+
+          <section class="grid metrics-grid">
+            <div class="card">
+              <h3>均線 MA 5 / 10 / 20 / 60 / 120</h3>
+              <p id="ma-values" class="metric"></p>
+              <p id="ma-price"></p>
+              <p id="ma-alignment"></p>
+              <p id="ma-longtrend"></p>
+              <p id="ma-score" class="score-line"></p>
+            </div>
+
+            <div class="card">
+              <h3>KD</h3>
+              <p id="kd-values" class="metric"></p>
+              <p id="kd-direction"></p>
+              <p id="kd-curve"></p>
+              <p id="kd-signal"></p>
+              <p id="kd-score" class="score-line"></p>
+            </div>
+
+            <div class="card">
+              <h3>MACD</h3>
+              <p id="macd-values" class="metric"></p>
+              <p id="macd-direction"></p>
+              <p id="macd-curve"></p>
+              <p id="macd-axis"></p>
+              <p id="macd-score" class="score-line"></p>
+            </div>
+
+            <div class="card">
+              <h3>量能 Volume / VMA5 / VMA20</h3>
+              <p id="volume-values" class="metric"></p>
+              <p id="volume-ratio"></p>
+              <p id="volume-breakout"></p>
+              <p id="volume-score" class="score-line"></p>
+            </div>
+
+            <div class="card">
+              <h3>基本面</h3>
+              <p id="valuation-values" class="metric"></p>
+              <p id="revenue-values"></p>
+              <p id="revenue-trend"></p>
+              <p id="revenue-base"></p>
+              <p id="revenue-cumulative"></p>
+              <p id="revenue-note"></p>
+            </div>
+
+            <div class="card">
+              <h3>法人籌碼</h3>
+              <p id="chip-summary" class="metric"></p>
+              <p id="chip-flow"></p>
+              <p id="chip-concentration"></p>
+              <p id="chip-broker-status"></p>
+              <div id="chip-days" class="mini-list"></div>
+            </div>
+
+            <div class="card">
+              <h3>產業 / 題材標籤</h3>
+              <p id="theme-group" class="metric"></p>
+              <p id="theme-tags"></p>
+              <p id="peer-leader"></p>
+              <div id="peer-members" class="mini-list"></div>
+            </div>
+
+            <div class="card">
+              <h3>成本價分析</h3>
+              <p id="cost-summary" class="metric"></p>
+              <p id="cost-detail"></p>
+              <p id="cost-suggestion"></p>
+            </div>
+
+            <div class="card">
+              <h3>風險管理</h3>
+              <p id="risk-summary" class="metric"></p>
+              <p id="risk-entry"></p>
+              <p id="risk-support"></p>
+              <p id="risk-resistance"></p>
+              <p id="risk-reward"></p>
+              <p id="risk-note"></p>
+            </div>
+
+            <div class="card card-span-2">
+              <h3>新聞熱度與情緒判讀</h3>
+              <p id="news-summary" class="metric"></p>
+              <div id="news-items" class="news-list"></div>
+            </div>
+          </section>
+
+          <section class="summary-card">
+            <h3>綜合進場判定</h3>
+            <p id="signal-summary"></p>
+          </section>
+
+          <section class="summary-card">
+            <h3>自動判讀</h3>
+            <p id="trade-narrative"></p>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
